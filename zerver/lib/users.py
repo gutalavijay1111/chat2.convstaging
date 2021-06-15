@@ -385,6 +385,8 @@ def format_user_row(
         timezone=canonicalize_timezone(row["timezone"]),
         is_active=row["is_active"],
         date_joined=row["date_joined"].isoformat(),
+        company=row["company"],
+        position=row["position"],
     )
 
     # Zulip clients that support using `GET /avatar/{user_id}` as a
@@ -453,6 +455,8 @@ def user_profile_to_user_row(user_profile: UserProfile) -> Dict[str, Any]:
     # the less readable `bot_owner` (instead of `bot_owner_id`).
     user_row = model_to_dict(user_profile, fields=[*realm_user_dict_fields, "bot_owner"])
     user_row["bot_owner_id"] = user_row["bot_owner"]
+    user_row["company"] = user_profile.company
+    user_row["position"] = user_profile.position
     del user_row["bot_owner"]
     return user_row
 

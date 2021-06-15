@@ -244,6 +244,8 @@ function render_user_info_popover(
         user_type: people.get_user_type(user.user_id),
         status_text: user_status.get_status_text(user.user_id),
         user_mention_syntax: people.get_mention_syntax(user.full_name, user.user_id),
+        company: user.company,
+        position:user.position,
     };
 
     if (user.is_bot) {

@@ -315,6 +315,8 @@ def fetch_initial_state_data(
         state["email"] = settings_user.email
         state["delivery_email"] = settings_user.delivery_email
         state["full_name"] = settings_user.full_name
+        state["company"] = settings_user.company
+        state["position"] = settings_user.position
 
     if want("realm_bot"):
         state["realm_bots"] = [] if user_profile is None else get_owned_bot_dicts(user_profile)
@@ -1114,6 +1116,7 @@ def post_process_state(
         user_dicts = sorted(user_dicts, key=lambda x: x["user_id"])
 
         ret["realm_users"] = [d for d in user_dicts if d["is_active"]]
+        print("Realm users =========>>>>> ", ret["realm_users"])
         ret["realm_non_active_users"] = [d for d in user_dicts if not d["is_active"]]
 
         """

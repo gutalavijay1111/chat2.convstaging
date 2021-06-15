@@ -29,6 +29,8 @@ function make_message_view_header(filter) {
         };
     }
     message_view_header.title = filter.get_title();
+    message_view_header.company = filter.get_company();
+    message_view_header.position = filter.get_position();
     message_view_header.icon = filter.get_icon();
     if (filter.has_operator("stream") && !filter._sub) {
         message_view_header.sub_count = "0";

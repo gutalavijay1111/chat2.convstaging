@@ -9,6 +9,7 @@ from django.utils.timezone import now as timezone_now
 from django.utils.translation import ugettext as _
 
 from zerver.decorator import REQ, has_request_variables
+from zerver.lib import message
 from zerver.lib.actions import (
     check_schedule_message,
     check_send_message,
@@ -194,8 +195,10 @@ def send_message_backend(
     delivery_type: str = REQ("delivery_type", default="send_now", documentation_pending=True),
     defer_until: Optional[str] = REQ("deliver_at", default=None, documentation_pending=True),
     tz_guess: Optional[str] = REQ("tz_guess", default=None, documentation_pending=True),
+    sent_from_api: Optional[bool] = REQ("sent_from_api", default=False, documentation_pending=True),
 ) -> HttpResponse:
 
+    print("-========> Sent from api", sent_from_api)
     # If req_to is None, then we default to an
     # empty list of recipients.
     message_to: Union[Sequence[int], Sequence[str]] = []
@@ -297,21 +300,40 @@ def send_message_backend(
             realm=realm,
         )
 
-    ret = check_send_message(
-        sender,
-        client,
-        message_type_name,
-        message_to,
-        topic_name,
-        message_content,
-        forged=forged,
-        forged_timestamp=request.POST.get("time"),
-        forwarder_user_profile=user_profile,
-        realm=realm,
-        local_id=local_id,
-        sender_queue_id=queue_id,
-        widget_content=widget_content,
-    )
+    if sent_from_api:
+        print("============> Sent from api", message_content)
+        ret = check_send_message(
+            sender,
+            client,
+            message_type_name,
+            message_to,
+            topic_name,
+            message_content,
+            forged=forged,
+            forged_timestamp=request.POST.get("time"),
+            forwarder_user_profile=user_profile,
+            realm=realm,
+            local_id=local_id,
+            sender_queue_id=queue_id,
+            widget_content=widget_content,
+            sent_from_api=True,
+        )
+    else:
+        ret = check_send_message(
+            sender,
+            client,
+            message_type_name,
+            message_to,
+            topic_name,
+            message_content,
+            forged=forged,
+            forged_timestamp=request.POST.get("time"),
+            forwarder_user_profile=user_profile,
+            realm=realm,
+            local_id=local_id,
+            sender_queue_id=queue_id,
+            widget_content=widget_content,
+        )
     return json_success({"id": ret})
 
 

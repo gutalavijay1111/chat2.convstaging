@@ -965,6 +965,8 @@ class Recipient(models.Model):
 class UserProfile(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
     MAX_NAME_LENGTH = 100
+    MAX_COMPANY_NAME_LENGTH = 200
+    MAX_POSITION_NAME_LENGTH = 200
     MIN_NAME_LENGTH = 2
     API_KEY_LENGTH = 32
     NAME_INVALID_CHARS = ["*", "`", "\\", ">", '"', "@"]
@@ -1027,6 +1029,8 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     # graduation year, etc.
     full_name: str = models.CharField(max_length=MAX_NAME_LENGTH)
 
+    company: str = models.CharField(max_length=MAX_COMPANY_NAME_LENGTH, default="")
+    position: str = models.CharField(max_length=MAX_POSITION_NAME_LENGTH, default="")
     date_joined: datetime.datetime = models.DateTimeField(default=timezone_now)
     tos_version: Optional[str] = models.CharField(null=True, max_length=10)
     api_key: str = models.CharField(max_length=API_KEY_LENGTH)
@@ -1968,6 +1972,7 @@ class AbstractMessage(models.Model):
     has_attachment: bool = models.BooleanField(default=False, db_index=True)
     has_image: bool = models.BooleanField(default=False, db_index=True)
     has_link: bool = models.BooleanField(default=False, db_index=True)
+    sent_from_api: bool = models.BooleanField(default=False, db_index=True)
 
     class Meta:
         abstract = True
@@ -2300,6 +2305,7 @@ class AbstractUserMessage(models.Model):
         # Whether we've sent a push notification to the user's mobile
         # devices for this message that has not been revoked.
         "active_mobile_push_notification",
+        "sent_from_api",
     ]
     # Certain flags are used only for internal accounting within the
     # Zulip backend, and don't make sense to expose to the API.

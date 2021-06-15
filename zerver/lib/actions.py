@@ -2491,8 +2491,10 @@ def check_send_message(
     local_id: Optional[str] = None,
     sender_queue_id: Optional[str] = None,
     widget_content: Optional[str] = None,
+    sent_from_api: Optional[bool] = False,
 ) -> int:
 
+    print("sent_from_api (check_send_message)======> ", sent_from_api)
     addressee = Addressee.legacy_build(sender, message_type_name, message_to, topic_name)
     try:
         message = check_message(
@@ -2507,6 +2509,7 @@ def check_send_message(
             local_id,
             sender_queue_id,
             widget_content,
+            sent_from_api=sent_from_api,
         )
     except ZephyrMessageAlreadySentException as e:
         return e.message_id
@@ -2704,11 +2707,13 @@ def check_message(
     sender_queue_id: Optional[str] = None,
     widget_content: Optional[str] = None,
     email_gateway: bool = False,
+    sent_from_api: bool = False,
 ) -> SendMessageRequest:
     """See
     https://zulip.readthedocs.io/en/latest/subsystems/sending-messages.html
     for high-level documentation on this subsystem.
     """
+    print("sent_from_api (check_message)======> ", sent_from_api)
     stream = None
 
     message_content = normalize_body(message_content_raw)
@@ -2793,6 +2798,12 @@ def check_message(
 
     # We render messages later in the process.
     assert message.rendered_content is None
+
+    if sent_from_api:
+        message.sent_from_api = True
+        # message.save()
+        print("The Message object from api====> ", message)
+
 
     if client.name == "zephyr_mirror":
         id = already_sent_mirrored_message_id(message)

@@ -378,6 +378,7 @@ class MessageDict:
                 "sender_id": message.sender.id,
                 "sending_client__name": message.sending_client.name,
                 "sender__realm_id": message.sender.realm_id,
+                "sent_from_api": message.sent_from_api,
             }
             for message in messages
         ]
@@ -404,8 +405,10 @@ class MessageDict:
             "sender_id",
             "sending_client__name",
             "sender__realm_id",
+            "sent_from_api",
         ]
         messages = Message.objects.filter(id__in=needed_ids).values(*fields)
+        print("Raw Messages from DB =====>", messages)
         return MessageDict.sew_submessages_and_reactions_to_msgs(messages)
 
     @staticmethod
@@ -432,6 +435,7 @@ class MessageDict:
             recipient_type_id=row["recipient__type_id"],
             reactions=row["reactions"],
             submessages=row["submessages"],
+            sent_from_api=row["sent_from_api"],
         )
 
     @staticmethod
@@ -453,6 +457,7 @@ class MessageDict:
         recipient_type_id: int,
         reactions: List[RawReactionRow],
         submessages: List[Dict[str, Any]],
+        sent_from_api: bool,
     ) -> Dict[str, Any]:
 
         obj = dict(
@@ -511,6 +516,8 @@ class MessageDict:
             obj["is_me_message"] = Message.is_status_message(content, rendered_content)
         else:
             obj["is_me_message"] = False
+
+        obj["sent_from_api"] = sent_from_api    
 
         obj["reactions"] = [
             ReactionDict.build_dict_from_raw_db_row(reaction) for reaction in reactions

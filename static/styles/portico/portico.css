@@ -1773,3 +1773,9 @@ label.label-title {
         text-decoration: underline;
     }
 }
+
+/*  Extra CSS */
+.brand-logo {
+    object-fit: contain;
+    height: 28px;
+}

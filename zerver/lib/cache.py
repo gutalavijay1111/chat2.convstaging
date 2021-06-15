@@ -525,6 +525,8 @@ realm_user_dict_fields: List[str] = [
     "is_bot",
     "realm_id",
     "timezone",
+    "company",
+    "position",
     "date_joined",
     "bot_owner_id",
     "delivery_email",

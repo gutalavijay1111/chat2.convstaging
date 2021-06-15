@@ -562,6 +562,8 @@ export class MessageListView {
             ...message_container,
             table_name: this.table_name,
         };
+        console.log("fetching template");
+        // console.table(message_container);
         return render_single_message(msg_to_render);
     }
 
@@ -580,6 +582,7 @@ export class MessageListView {
     }
 
     render(messages, where, messages_are_new) {
+        console.log("Rendering Now...", messages)
         // This function processes messages into chunks with separators between them,
         // and templates them to be inserted as table rows into the DOM.
 
@@ -1264,6 +1267,7 @@ export class MessageListView {
     }
 
     get_message(id) {
+        console.log(this.list.get(id))
         return this.list.get(id);
     }
 
@@ -1291,13 +1295,17 @@ export class MessageListView {
             // 'p' tag is sliced off to get sender in the same line as the
             // first line of the message
             const msg_content = message_container.msg.content;
+            console.log("Message Container ==> ", message_container)
             const p_index = msg_content.indexOf("</p>");
             message_container.status_message =
                 msg_content.slice("<p>/me ".length, p_index) +
                 msg_content.slice(p_index + "</p>".length);
             message_container.include_sender = true;
+            message_container.sent_from_api = message_container.msg.sent_from_api;
         } else {
             message_container.status_message = false;
+            message_container.sent_from_api = message_container.msg.sent_from_api
+            console.log("Message Container ==> ", message_container)
         }
     }
 }

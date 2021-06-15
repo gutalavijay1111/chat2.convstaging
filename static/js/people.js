@@ -89,7 +89,6 @@ export function get_by_email(email) {
             "Obsolete email passed to get_by_email: " + email + " new email = " + person.email,
         );
     }
-
     return person;
 }
 

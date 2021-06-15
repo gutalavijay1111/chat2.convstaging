@@ -641,6 +641,79 @@ export class Filter {
         return undefined;
     }
 
+    get_company() {
+        const term_types = this.sorted_term_types();
+        if (
+            (term_types.length === 3 && _.isEqual(term_types, ["stream", "topic", "search"])) ||
+            (term_types.length === 2 && _.isEqual(term_types, ["stream", "topic"]))
+        ) {
+            if (!this._sub) {
+                return i18n.t("Unknown stream");
+            }
+            return this._sub.name;
+        }
+        if (term_types.length === 1 || (term_types.length === 2 && term_types[1] === "search")) {
+            switch (term_types[0]) {
+                case "pm-with": {
+                    const emails = this.operands("pm-with")[0].split(",");
+                    const company = emails.map((email) => {
+                        if (!people.get_by_email(email)) {
+                            return email;
+                        }
+                        return people.get_by_email(email).company;
+                    });
+
+                    // We use join to handle the addition of a comma and space after every name
+                    // and also to ensure that we return a string and not an array so that we
+                    // can have the same return type as other cases.
+                    console.log("get_company => ",company);
+                    if (company.length > 1) {
+                        return ""
+                    }
+                    return company;
+                }
+            }
+        }
+        /* istanbul ignore next */
+        return undefined;
+    }
+
+    get_position() {
+        const term_types = this.sorted_term_types();
+        if (
+            (term_types.length === 3 && _.isEqual(term_types, ["stream", "topic", "search"])) ||
+            (term_types.length === 2 && _.isEqual(term_types, ["stream", "topic"]))
+        ) {
+            if (!this._sub) {
+                return i18n.t("Unknown stream");
+            }
+            return this._sub.name;
+        }
+        if (term_types.length === 1 || (term_types.length === 2 && term_types[1] === "search")) {
+            switch (term_types[0]) {
+                case "pm-with": {
+                    const emails = this.operands("pm-with")[0].split(",");
+                    const position = emails.map((email) => {
+                        if (!people.get_by_email(email)) {
+                            return email;
+                        }
+                        return people.get_by_email(email).position;
+                    });
+
+                    // We use join to handle the addition of a comma and space after every name
+                    // and also to ensure that we return a string and not an array so that we
+                    // can have the same return type as other cases.
+                    if (position.length > 1) {
+                        return ""
+                    }
+                    return position;
+                }
+            }
+        }
+        /* istanbul ignore next */
+        return undefined;
+    }
+
     allow_use_first_unread_when_narrowing() {
         return this.can_mark_messages_read() || this.has_operator("is");
     }
